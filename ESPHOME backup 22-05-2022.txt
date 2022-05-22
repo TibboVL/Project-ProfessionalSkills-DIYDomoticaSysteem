@@ -1,0 +1,845 @@
+esphome:
+  name: esphome-web-xxxxxx
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# configure I2C bus
+i2c:
+  sda: 25
+  scl: 26
+  scan: true
+  id: bus_a
+  
+# configure first IO expantion boards
+pcf8574:
+  - id: 'pcf8574_hub1'
+    address: 0x20
+    pcf8575: false
+  - id: 'pcf8574_hub2'
+    address: 0x21
+    pcf8575: false
+  - id: 'pcf8574_hub3'
+    address: 0x22
+    pcf8575: false
+  - id: 'pcf8574_hub4'
+    address: 0x23
+    pcf8575: false
+
+# all lights off button
+button:
+  - platform: template
+    name: "AllLightsButton"
+    id: AllLightsButton
+    on_press:
+      - lambda: |-
+            if (id(TimerAllLights).is_running())
+              return;
+            id(TimerAllLights).execute();
+      - lambda: |-
+            if (id(sensor1).state) id(Lamp1Main).turn_off();
+            if (id(sensor2).state) id(Lamp2Main).turn_off();
+            if (id(sensor3).state) id(Lamp3Main).turn_off();
+            if (id(sensor5).state) id(Lamp5Main).turn_off();
+            if (id(sensor6).state) id(Lamp6Main).turn_off();
+            if (id(sensor7).state) id(Lamp7Main).turn_off();
+            if (id(sensor8).state) id(Lamp8Main).turn_off();
+            if (id(sensor9).state) id(Lamp9Main).turn_off();
+            if (id(sensor10).state) id(Lamp10Main).turn_off();
+            if (id(sensor11).state) id(Lamp11Main).turn_off();
+            if (id(sensor12).state) id(Lamp12Main).turn_off();
+            if (id(sensor13).state) id(Lamp13Main).turn_off();
+            if (id(sensor14).state) id(Lamp14Main).turn_off();
+            if (id(sensor16).state) id(Lamp16Main).turn_off();
+
+switch:
+  
+# lamp 1
+  # this is the switch that gives the relay a 500ms pulse and then turns off
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub1
+      # select pin on hub
+      number: 0
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp1Background
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: Lamp1Background
+  
+  # this switch will remember if the light is on or off and 
+  # turn on the first switch everytime this switch is turned on or off
+  - platform: template
+    name: "Lamp1Main"
+    id: Lamp1Main
+    lambda: return id(sensor1).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp1).is_running())
+            return;
+          id(TimerLamp1).execute();
+          id(Lamp1Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp1).is_running())
+            return;
+          id(TimerLamp1).execute();
+          id(Lamp1Background).turn_on();
+  
+# lamp 2
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub1
+      # select pin on hub
+      number: 1
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp2Background
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: Lamp2Background
+    
+  - platform: template
+    name: "Lamp2Main"
+    id: Lamp2Main
+    lambda: return id(sensor2).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp2).is_running())
+            return;
+          id(TimerLamp2).execute();
+          id(Lamp2Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp2).is_running())
+            return;
+          id(TimerLamp2).execute();
+          id(Lamp2Background).turn_on();
+
+# lamp 3
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub1
+      # select pin on hub
+      number: 2
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp3Background
+    on_turn_on:
+    - delay: 100ms
+    - switch.turn_off: Lamp3Background
+    
+  - platform: template
+    name: "Lamp3Main"
+    id: Lamp3Main
+    lambda: return id(sensor3).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp3).is_running())
+            return;
+          id(TimerLamp3).execute();
+          id(Lamp3Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp3).is_running())
+            return;
+          id(TimerLamp3).execute();
+          id(Lamp3Background).turn_on();
+
+# relay 4 currently not used
+
+# lamp 5
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub1
+      # select pin on hub
+      number: 4
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp5Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp5Background
+    
+  - platform: template
+    name: "Lamp5Main"
+    id: Lamp5Main
+    lambda: return id(sensor5).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp5).is_running())
+            return;
+          id(TimerLamp5).execute();
+          id(Lamp5Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp5).is_running())
+            return;
+          id(TimerLamp5).execute();
+          id(Lamp5Background).turn_on();
+
+# lamp 6
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub1
+      # select pin on hub
+      number: 5
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp6Background
+    on_turn_on:
+    - delay: 600ms
+    - switch.turn_off: Lamp6Background
+    
+  - platform: template
+    name: "Lamp6Main"
+    id: Lamp6Main
+    lambda: return id(sensor6).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp6).is_running())
+            return;
+          id(TimerLamp6).execute();
+          id(Lamp6Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp6).is_running())
+            return;
+          id(TimerLamp6).execute();
+          id(Lamp6Background).turn_on();
+
+# lamp 7
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub1
+      # select pin on hub
+      number: 6
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp7Background
+    on_turn_on:
+    - delay: 700ms
+    - switch.turn_off: Lamp7Background
+    
+  - platform: template
+    name: "Lamp7Main"
+    id: Lamp7Main
+    lambda: return id(sensor7).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp7).is_running())
+            return;
+          id(TimerLamp7).execute();
+          id(Lamp7Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp7).is_running())
+            return;
+          id(TimerLamp7).execute();
+          id(Lamp7Background).turn_on();
+
+# lamp 8
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub1
+      # select pin on hub
+      number: 7
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp8Background
+    on_turn_on:
+    - delay: 800ms
+    - switch.turn_off: Lamp8Background
+    
+  - platform: template
+    name: "Lamp8Main"
+    id: Lamp8Main
+    lambda: return id(sensor8).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp8).is_running())
+            return;
+          id(TimerLamp8).execute();
+          id(Lamp8Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp8).is_running())
+            return;
+          id(TimerLamp8).execute();
+          id(Lamp8Background).turn_on();
+
+# lamp 9
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 0
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp9Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp9Background
+    
+  - platform: template
+    name: "Lamp9Main"
+    id: Lamp9Main
+    lambda: return id(sensor9).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp9).is_running())
+            return;
+          id(TimerLamp9).execute();
+          id(Lamp9Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp9).is_running())
+            return;
+          id(TimerLamp9).execute();
+          id(Lamp9Background).turn_on();
+
+# lamp 10
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 1
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp10Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp10Background
+    
+  - platform: template
+    name: "Lamp10Main"
+    id: Lamp10Main
+    lambda: return id(sensor10).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp10).is_running())
+            return;
+          id(TimerLamp10).execute();
+          id(Lamp10Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp10).is_running())
+            return;
+          id(TimerLamp10).execute();
+          id(Lamp10Background).turn_on();
+
+# lamp 11
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 2
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp11Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp11Background
+    
+  - platform: template
+    name: "Lamp11Main"
+    id: Lamp11Main
+    lambda: return id(sensor11).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp11).is_running())
+            return;
+          id(TimerLamp11).execute();
+          id(Lamp11Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp11).is_running())
+            return;
+          id(TimerLamp11).execute();
+          id(Lamp11Background).turn_on();
+
+# lamp 12
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 3
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp12Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp12Background
+    
+  - platform: template
+    name: "Lamp12Main"
+    id: Lamp12Main
+    lambda: return id(sensor12).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp12).is_running())
+            return;
+          id(TimerLamp12).execute();
+          id(Lamp12Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp12).is_running())
+            return;
+          id(TimerLamp12).execute();
+          id(Lamp12Background).turn_on();
+
+# lamp 13
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 4
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp13Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp13Background
+    
+  - platform: template
+    name: "Lamp13Main"
+    id: Lamp13Main
+    lambda: return id(sensor13).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp13).is_running())
+            return;
+          id(TimerLamp13).execute();
+          id(Lamp13Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp13).is_running())
+            return;
+          id(TimerLamp13).execute();
+          id(Lamp13Background).turn_on();
+
+# lamp 14
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 5
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp14Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp14Background
+    
+  - platform: template
+    name: "Lamp14Main"
+    id: Lamp14Main
+    lambda: return id(sensor14).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp14).is_running())
+            return;
+          id(TimerLamp14).execute();
+          id(Lamp14Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp14).is_running())
+            return;
+          id(TimerLamp14).execute();
+          id(Lamp14Background).turn_on();
+
+# lamp 15
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 6
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp15Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp15Background
+    
+  - platform: template
+    name: "Lamp15Main"
+    id: Lamp15Main
+    lambda: return id(sensor15).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp15).is_running())
+            return;
+          id(TimerLamp15).execute();
+          id(Lamp15Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp15).is_running())
+            return;
+          id(TimerLamp15).execute();
+          id(Lamp15Background).turn_on();
+
+# lamp 16
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub2
+      # select pin on hub
+      number: 7
+      # One of INPUT or OUTPUT
+      mode:
+        output: true
+      inverted: true
+    id: Lamp16Background
+    on_turn_on:
+    - delay: 500ms
+    - switch.turn_off: Lamp16Background
+    
+  - platform: template
+    name: "Lamp16Main"
+    id: Lamp16Main
+    lambda: return id(sensor16).state;
+    turn_on_action:
+      - lambda: |-
+          if (id(TimerLamp16).is_running())
+            return;
+          id(TimerLamp16).execute();
+          id(Lamp16Background).turn_on();
+    turn_off_action:
+      - lambda: |-
+          if (id(TimerLamp16).is_running())
+            return;
+          id(TimerLamp16).execute();
+          id(Lamp16Background).turn_on();
+
+
+
+# these timers prevent the light switches from being spammed
+script:
+  - id: TimerAllLights
+    then:
+      delay: 2s
+  - id: TimerLamp1
+    then:
+      delay: 1s
+  - id: TimerLamp2
+    then:
+      delay: 1s
+  - id: TimerLamp3
+    then:
+      delay: 1s
+  - id: TimerLamp4
+    then:
+      delay: 1s
+  - id: TimerLamp5
+    then:
+      delay: 1s
+  - id: TimerLamp6
+    then:
+      delay: 1s
+  - id: TimerLamp7
+    then:
+      delay: 1s
+  - id: TimerLamp8
+    then:
+      delay: 1s
+  - id: TimerLamp9
+    then:
+      delay: 1s
+  - id: TimerLamp10
+    then:
+      delay: 1s
+  - id: TimerLamp11
+    then:
+      delay: 1s
+  - id: TimerLamp12
+    then:
+      delay: 1s
+  - id: TimerLamp13
+    then:
+      delay: 1s
+  - id: TimerLamp14
+    then:
+      delay: 1s
+  - id: TimerLamp15
+    then:
+      delay: 1s
+  - id: TimerLamp16
+    then:
+      delay: 1s
+
+# sensors (voltage detection)
+binary_sensor:
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 0
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor1
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 1
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor2
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 2
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor3
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 3
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor4
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 4
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor5
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 5
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor6
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 6
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor7
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub3
+      # select pin on hub
+      number: 7
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor8
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 7
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor9
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 6
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor10
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 5
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor11
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 4
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor12
+    
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 3
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor13
+    
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 2
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor14
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 1
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor15
+
+  - platform: gpio
+    pin:
+    # select which IO expantion board
+      pcf8574: pcf8574_hub4
+      # select pin on hub
+      number: 0
+      # One of INPUT or OUTPUT
+      mode:
+        output: false
+        input: true
+      inverted: true
+    id: sensor16
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esphome-Web-xxxxxx"
+    password: "xxxxxxxxxxxxx"
+
+captive_portal:
+    
